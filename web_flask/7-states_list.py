@@ -1,28 +1,27 @@
 #!/usr/bin/python3
-""" Starts a Flask application related to HBNB. """
-
+""" Script that runs an app with Flask framework """
 from flask import Flask, render_template
 from models import storage
 from models.state import State
+
 
 app = Flask(__name__)
 
 
 @app.teardown_appcontext
-def teardown_db(exception):
-    """Closes the database session after each request."""
+def teardown_session(exception):
+    """ Teardown """
     storage.close()
 
 
 @app.route('/states_list', strict_slashes=False)
-def states_list():
-    """
-        Flask route at /states_list.
-        Displays the list of the States in the database.
-    """
-    states = storage.all(State).values()
-    return render_template('7-states_list.html', states=states)
+def display_html():
+    """ Function called with /states_list route """
+    states = storage.all(State)
+    dict_to_html = {value.id: value.name for value in states.values()}
+    return render_template('7-states_list.html',
+                           Table="States",
+                           items=dict_to_html)
 
-
-if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5000)
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=5000)
